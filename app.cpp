@@ -1,12 +1,13 @@
 /**
 \file
 \brief Программа для решения квадратных уравнений
+
 Программа получает коэффициенты кв. уравнения и выводит приближенные решения
 */
 #include <stdio.h>
 #include <ctype.h>
 #include <math.h>
-#define EPS 1e-20 // погрешность
+#define EPS 1e-20 ///< погрешность
 
 void solve_sq(double, double, double);
 void solve_not_sq(double, double);
@@ -24,13 +25,13 @@ int main()
         char line[1000];
         getline(line);
         if (sscanf(line, "%lf %lf %lf", &a, &b, &c) != 3)
-            printf("неверный формат ввода, повторитте попытку\n");
+            printf("неверный формат ввода, повторите попытку\n");
         else
             break;
     }
-    if (fabs(a) < EPS) /// при a ~= 0
+    if (fabs(a) < EPS) ///< при a ~= 0
         solve_not_sq(b, c);
-    else /// при a != 0
+    else ///< при a != 0
         solve_sq(a, b, c);
     return 0;
 }
@@ -42,8 +43,14 @@ int main()
 void getline(char line[])
 {
     char c;
-    for (int i = 0; (c = getchar()) != EOF && c != '\n' && i < 999; i++)
+    int i;
+    for (i = 0; (c = getchar()) != EOF && c != '\n' && i < 999; i++)
         line[i] = c;
+    if (c == '\n') {
+        line[i] = c;
+        ++i;
+    }
+    line[i] = '\0';
     return;
 }
 
