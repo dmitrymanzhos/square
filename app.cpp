@@ -5,29 +5,26 @@
 Программа получает коэффициенты кв. уравнения и выводит приближенные решения
 */
 #include <stdio.h>
-#include <ctype.h>
 #include <math.h>
 #define EPS 1e-20 ///< погрешность
 
 void solve_sq(double, double, double);
 void solve_not_sq(double, double);
-void getline(char line[]);
+void getline(char []);
 
 /*!
 Точка входа
 */
 int main()
 {
-    double a, b, c;
+    double a = 0.0, b = 0.0, c = 0.0;
     printf("введите коэффициенты через пробел\n");
-    while (1)
+    char line[1000];
+    getline(line);
+    while (sscanf(line, "%lf %lf %lf", &a, &b, &c) != 3)
     {
-        char line[1000];
+        printf("неверный формат ввода, повторите попытку\n");
         getline(line);
-        if (sscanf(line, "%lf %lf %lf", &a, &b, &c) != 3)
-            printf("неверный формат ввода, повторите попытку\n");
-        else
-            break;
     }
     if (fabs(a) < EPS) ///< при a ~= 0
         solve_not_sq(b, c);
@@ -66,6 +63,7 @@ void solve_not_sq(double b, double c)
         printf("уравнение не квадратное; нет решений\n");
     else
         printf("уравнение не квадратное; 1 корень:\n%lf\n", c / b);
+    return;
 }
 
 /*!
