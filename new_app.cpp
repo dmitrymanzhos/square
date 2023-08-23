@@ -6,14 +6,14 @@
 */
 #include <stdio.h>
 #include <math.h>
-const double EPS = 1e-20; ///< погрешность
+const double EPS = 0.0000001; ///< погрешность
 const int INF = 999999; ///< значение для бесконечности корней
 
 int solve_square(double coefs[], double roots[]);
 void print_roots(double coefs[] ,double roots[], int count);
 void get_coefs(double coefs[]);
 void get_line(char line[]);
-int compare_to_0 (double a);
+int compare (double a, double b);
 int one_test(double a, double b, double c, double x1_ref, double x2_ref, int count_ref);
 int all_tests();
 
@@ -51,10 +51,10 @@ int main(int arg_count, char *argv[])
 */
 int solve_square(double coefs[], double roots[])
     {
-    if (compare_to_0(coefs[0]))
-        if (compare_to_0(coefs[1]) && !compare_to_0(coefs[2]))
+    if (compare(coefs[0], 0) == 0)
+        if (compare(coefs[1], 0) == 0 && compare(coefs[2], 0) != 0)
             return 0; ///< нет корней
-        else if (compare_to_0(coefs[1]) && compare_to_0(coefs[2]))
+        else if (compare(coefs[1], 0) == 0 && compare(coefs[2], 0) == 0)
             return INF; ///< бесконечно много корней
         else
             {
@@ -64,14 +64,14 @@ int solve_square(double coefs[], double roots[])
     else
         {
         double d = coefs[1] * coefs[1] - 4 * coefs[0] * coefs[2];
-        if (d <= -EPS)
+        if (compare(d, 0) == -1)
             return 0;
-        else if (compare_to_0(d))
+        else if (compare(d, 0) == 0)
             {
             roots[0] = -coefs[1] / (2 * coefs[0]);
             return 1;
             }
-        else if (d >= EPS)
+        else if (compare(d, 0) == 1)
             {
             roots[0] = (-coefs[1] + sqrt(d)) / (2 * coefs[0]);
             roots[1] = (-coefs[1] - sqrt(d)) / (2 * coefs[0]);
@@ -89,7 +89,7 @@ int solve_square(double coefs[], double roots[])
 */
 void print_roots(double coefs[] ,double roots[], int count)
     {
-    if (compare_to_0(coefs[0]))
+    if (compare(coefs[0], 0) == 0)
         {
         switch (count)
             {
@@ -164,15 +164,18 @@ void get_line(char line[])
     }
 
 /*!
-Проверяет на равенство 0 в условиях double чисел
+сравнивает число с 0 в условиях double чисел
 \param a[in] число
-\return 1 если равенство; 0 иначе
+\return -1 если < 0, 0 если равенство, 1 если > 0
 */
-int compare_to_0 (double a)
+int compare (double a, double b)
     {
-    if (fabs(a) < EPS)
+    if (a - b <= -EPS)
+        return -1;
+    else if (fabs(a - b) < EPS)
+        return 0;
+    else
         return 1;
-    else return 0;
     }
 
 int one_test(double a, double b, double c, double x1_ref, double x2_ref, int count_ref)
@@ -180,12 +183,14 @@ int one_test(double a, double b, double c, double x1_ref, double x2_ref, int cou
     double coefs[] = {a, b, c};
     double roots[] = {0, 0};
     int count = solve_square(coefs, roots);
+
     if (count == count_ref)
-        if ((roots[0] == x1_ref && roots[1] == x2_ref) || (roots[1] == x1_ref && roots[0] == x2_ref))
+        if ((compare(roots[0], x1_ref) == 0 && compare(roots[1], x2_ref) == 0) || (compare(roots[1], x1_ref) == 0 && compare(roots[0], x2_ref) == 0))
             {
             printf("ok\n");
             return 1;
             }
+
     printf("FAIL: при coefs[%lf, %lf, %lf] roots[%lf, %lf] count = %i; ожидалось roots[%lf, %lf] count = %i\n",
             coefs[0], coefs[1], coefs[2], roots[0], roots[1], count, x1_ref, x2_ref, count_ref);
     return 0;
@@ -194,6 +199,10 @@ int one_test(double a, double b, double c, double x1_ref, double x2_ref, int cou
 int all_tests()
     {
     int total = 0;
+    total += one_test(0, 0, 0, 0, 0, INF);
+    total += one_test(12.33569, -0.2365, -69589.23, 75.11812179, -75.09894977, 2);
+    total += one_test(0, 0, 0, 0, 0, INF);
+    total += one_test(0, 0, 0, 0, 0, INF);
     total += one_test(0, 0, 0, 0, 0, INF);
     return total;
     }
