@@ -11,12 +11,18 @@ const double EPS = 0.0000001; ///< погрешность
 const int INF = 999999; ///< значение для бесконечности корней
 const int ERR = -1; ///< код ошибки
 
+struct test_data {
+    double a, b, c;
+    double x1_ref, x2_ref;
+    int count_ref;
+    };
+
 int solve_square(double coefs[], double roots[]);
 void print_roots(double coefs[] ,double roots[], int count);
 void get_coefs(double coefs[]);
 void get_line(char line[]);
 int compare(double a, double b);
-int do_one_test(double a, double b, double c, double x1_ref, double x2_ref, int count_ref);
+int do_one_test(const test_data* test);
 int do_all_tests();
 
 
@@ -53,6 +59,7 @@ int main(int arg_count, char *argv[])
 */
 int solve_square(double coefs[], double roots[])
     {
+
     if (compare(coefs[0], 0) == 0) ///< при a = 0
         if (compare(coefs[1], 0) == 0 && compare(coefs[2], 0) != 0)
             return 0; ///< нет корней
@@ -63,6 +70,20 @@ int solve_square(double coefs[], double roots[])
             roots[0] = -coefs[2] / coefs[1];
             return 1; ///< 1 корень
             }
+    else if (compare(coefs[2], 0) == 0) ///< при c = 0
+        {
+        if (compare(-coefs[1] / coefs[0], 0) == 0)
+            {
+            roots[0] = 0;
+            return 1;
+            }
+        else
+            {
+            roots[0] = 0;
+            roots[1] = -coefs[1] / coefs[0];
+            return 2;
+            }
+        }
     else
         {
         double d = coefs[1] * coefs[1] - 4 * coefs[0] * coefs[2];
@@ -188,21 +209,21 @@ int compare(double a, double b)
 \param[in] count_ref правильное количество корней
 \return 1 если тест пройден успешно; 0 иначе
 */
-int do_one_test(double a, double b, double c, double x1_ref, double x2_ref, int count_ref)
+int do_one_test(const test_data* test)
     {
-    double coefs[] = {a, b, c};
+    double coefs[] = {(*test).a, (*test).b, (*test).c};
     double roots[] = {0, 0};
     int count = solve_square(coefs, roots);
 
-    if (count == count_ref)
-        if ((compare(roots[0], x1_ref) == 0 && compare(roots[1], x2_ref) == 0) || (compare(roots[1], x1_ref) == 0 && compare(roots[0], x2_ref) == 0))
+    if (count == (*test).count_ref)
+        if ((compare(roots[0], (*test).x1_ref) == 0 && compare(roots[1], (*test).x2_ref) == 0) || (compare(roots[1], (*test).x1_ref) == 0 && compare(roots[0], (*test).x2_ref) == 0))
             {
             printf("ok\n");
             return 1;
             }
 
     printf("FAIL: при coefs[%lf, %lf, %lf] roots[%lf, %lf] count = %i; ожидалось roots[%lf, %lf] count = %i\n",
-            coefs[0], coefs[1], coefs[2], roots[0], roots[1], count, x1_ref, x2_ref, count_ref);
+            coefs[0], coefs[1], coefs[2], roots[0], roots[1], count, (*test).x1_ref, (*test).x2_ref, (*test).count_ref);
     return 0;
     }
 
@@ -212,12 +233,20 @@ int do_one_test(double a, double b, double c, double x1_ref, double x2_ref, int 
 */
 int do_all_tests()
     {
+    const int num_tests = 8; ///< количество тестов
+    test_data all_tests[num_tests] = {
+        {.a=0, .b=0, .c=0, .x1_ref=0, .x2_ref=0, .count_ref=INF},
+        {12.33569, -0.2365, -69589.23, 75.11812179, -75.09894977, 2},
+        {0.00000001, 2, 46.6, -23.3, 0, 1},
+        {0, 0, 10, 0, 0, 0},
+        {1, -2, 1, 1, 0, 1},
+        {1, 1, 1, 0, 0, 0},
+        {12, 89, 0, 0, -7.41666666666, 2},
+        {12, 0, 0, 0, 0, 1}
+        };
+
     int total = 0;
-    total += do_one_test(0, 0, 0, 0, 0, INF);
-    total += do_one_test(12.33569, -0.2365, -69589.23, 75.11812179, -75.09894977, 2);
-    total += do_one_test(0.00000001, 2, 46.6, -23.3, 0, 1);
-    total += do_one_test(0, 0, 10, 0, 0, 0);
-    total += do_one_test(1, -2, 1, 1, 0, 1);
-    total += do_one_test(1, 1, 1, 0, 0, 0);
+    for (int i = 0; i < num_tests; i++)
+        total += do_one_test(&all_tests[i]);
     return total;
     }
