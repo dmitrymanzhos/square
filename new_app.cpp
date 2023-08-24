@@ -11,7 +11,7 @@ const double EPS = 0.0000001; ///< погрешность
 const int INF = 999999; ///< значение для бесконечности корней
 const int ERR = -1; ///< код ошибки
 
-struct test_data {
+struct test_data { ///< структура для 1 теста
     double a, b, c;
     double x1_ref, x2_ref;
     int count_ref;
@@ -70,18 +70,18 @@ int solve_square(double coefs[], double roots[])
             roots[0] = -coefs[2] / coefs[1];
             return 1; ///< 1 корень
             }
-    else if (compare(coefs[2], 0) == 0) ///< при c = 0
+    else if (compare(coefs[2], 0) == 0) ///< при c = 0, a != 0
         {
-        if (compare(-coefs[1] / coefs[0], 0) == 0)
+        if (compare(coefs[1], 0) == 0)
             {
             roots[0] = 0;
-            return 1;
+            return 1; ///< если b = 0
             }
         else
             {
             roots[0] = 0;
             roots[1] = -coefs[1] / coefs[0];
-            return 2;
+            return 2; ///< если b != 0
             }
         }
     else
@@ -204,9 +204,7 @@ int compare(double a, double b)
 
 /*!
 Проводит тест функции solve_square
-\param[in] a,b,c коэффициенты
-\param[in] x1_ref,x2_ref правильные корни
-\param[in] count_ref правильное количество корней
+\param[in] test структура, содержащая данные для теста
 \return 1 если тест пройден успешно; 0 иначе
 */
 int do_one_test(const test_data* test)
