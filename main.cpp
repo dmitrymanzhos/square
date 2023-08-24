@@ -5,9 +5,9 @@
 Программа получает коэффициенты кв. уравнения вида a*x^2 + b*x + c = 0
 и выводит приближенные решения
 */
+#include <stdio.h>
+#include <cstring>
 #include "all.h"
-#include "tests.cpp"
-#include "solver.cpp"
 
 /*!
 Точка входа
@@ -18,7 +18,7 @@ int main(int arg_count, char *argv[])
     {
     if (arg_count > 1) ///< если есть аргументы командной строки кроме  имени файла
         {
-        if (strcmp(argv[1], "test") == 0) ///< если 1й аргумент равен "test"
+        if (strcmp(argv[1], "--test") == 0) ///< если 1й аргумент равен "test"
             {
             printf("тестов пройдено: %i\n", do_all_tests());
             return 0;

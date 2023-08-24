@@ -1,15 +1,7 @@
 /*!
 \file all.h
-Заголовочный файл с прототипами функций
+Заголовочный файл с прототипами функций для main.cpp
 */
-#include <stdio.h>
-#include <math.h>
-#include <cstring>
-
-const double EPS = 0.0000001; ///< погрешность
-const int INF = 999999; ///< значение для бесконечности корней
-const int ERR = -1; ///< код ошибки
-
 struct test_data { ///< структура для 1 теста
     double a, b, c;
     double x1_ref, x2_ref;

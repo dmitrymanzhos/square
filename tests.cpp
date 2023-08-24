@@ -2,6 +2,8 @@
 \file tests.cpp
 Файл с функциями для тестирования
 */
+#include <stdio.h>
+#include "tests.h"
 
 /*!
 Проводит тест функции solve_square
