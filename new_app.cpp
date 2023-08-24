@@ -6,16 +6,18 @@
 */
 #include <stdio.h>
 #include <math.h>
+#include <cstring>
 const double EPS = 0.0000001; ///< погрешность
 const int INF = 999999; ///< значение для бесконечности корней
+const int ERR = -1; ///< код ошибки
 
 int solve_square(double coefs[], double roots[]);
 void print_roots(double coefs[] ,double roots[], int count);
 void get_coefs(double coefs[]);
 void get_line(char line[]);
-int compare (double a, double b);
-int one_test(double a, double b, double c, double x1_ref, double x2_ref, int count_ref);
-int all_tests();
+int compare(double a, double b);
+int do_one_test(double a, double b, double c, double x1_ref, double x2_ref, int count_ref);
+int do_all_tests();
 
 
 /*!
@@ -23,11 +25,11 @@ int all_tests();
 */
 int main(int arg_count, char *argv[])
     {
-    if (arg_count > 1)
+    if (arg_count > 1) ///< если есть аргументы командной строки кроме  имени файла
         {
-        if (argv[1][0] == 't' && argv[1][1] == 'e' && argv[1][2] == 's' && argv[1][3] == 't')
+        if (strcmp(argv[1], "test") == 0) ///< если аргумент равен "test"
             {
-            all_tests();
+            printf("тестов пройдено: %i\n", do_all_tests());
             return 0;
             }
         else return 0;
@@ -51,7 +53,7 @@ int main(int arg_count, char *argv[])
 */
 int solve_square(double coefs[], double roots[])
     {
-    if (compare(coefs[0], 0) == 0)
+    if (compare(coefs[0], 0) == 0) ///< при a = 0
         if (compare(coefs[1], 0) == 0 && compare(coefs[2], 0) != 0)
             return 0; ///< нет корней
         else if (compare(coefs[1], 0) == 0 && compare(coefs[2], 0) == 0)
@@ -59,26 +61,27 @@ int solve_square(double coefs[], double roots[])
         else
             {
             roots[0] = -coefs[2] / coefs[1];
-            return 1;
+            return 1; ///< 1 корень
             }
     else
         {
         double d = coefs[1] * coefs[1] - 4 * coefs[0] * coefs[2];
         if (compare(d, 0) == -1)
-            return 0;
+            return 0; ///< если дискриминант < 0
         else if (compare(d, 0) == 0)
             {
             roots[0] = -coefs[1] / (2 * coefs[0]);
-            return 1;
+            return 1; ///< если дискриминант = 0
             }
         else if (compare(d, 0) == 1)
             {
-            roots[0] = (-coefs[1] + sqrt(d)) / (2 * coefs[0]);
-            roots[1] = (-coefs[1] - sqrt(d)) / (2 * coefs[0]);
-            return 2;
+            double root_of_d = sqrt(d);
+            roots[0] = (-coefs[1] + root_of_d) / (2 * coefs[0]);
+            roots[1] = (-coefs[1] - root_of_d) / (2 * coefs[0]);
+            return 2; ///< если дискриминант > 0
             }
         }
-    return -1;
+    return ERR; ///< код ошибки
     }
 
 /*!
@@ -89,7 +92,7 @@ int solve_square(double coefs[], double roots[])
 */
 void print_roots(double coefs[] ,double roots[], int count)
     {
-    if (compare(coefs[0], 0) == 0)
+    if (compare(coefs[0], 0) == 0) ///< при a = 0
         {
         switch (count)
             {
@@ -107,7 +110,7 @@ void print_roots(double coefs[] ,double roots[], int count)
                 break;
             }
         }
-    else
+    else ///< при a != 0
         {
         switch (count)
             {
@@ -165,20 +168,27 @@ void get_line(char line[])
 
 /*!
 сравнивает число с 0 в условиях double чисел
-\param a[in] число
+\param[in] a число
 \return -1 если < 0, 0 если равенство, 1 если > 0
 */
-int compare (double a, double b)
+int compare(double a, double b)
     {
     if (a - b <= -EPS)
-        return -1;
+        return -1; ///< если a < b
     else if (fabs(a - b) < EPS)
-        return 0;
+        return 0; ///< если a = b
     else
-        return 1;
+        return 1; ///< если a > b
     }
 
-int one_test(double a, double b, double c, double x1_ref, double x2_ref, int count_ref)
+/*!
+Проводит тест функции solve_square
+\param[in] a,b,c коэффициенты
+\param[in] x1_ref,x2_ref правильные корни
+\param[in] count_ref правильное количество корней
+\return 1 если тест пройден успешно; 0 иначе
+*/
+int do_one_test(double a, double b, double c, double x1_ref, double x2_ref, int count_ref)
     {
     double coefs[] = {a, b, c};
     double roots[] = {0, 0};
@@ -196,13 +206,18 @@ int one_test(double a, double b, double c, double x1_ref, double x2_ref, int cou
     return 0;
     }
 
-int all_tests()
+/*!
+Выполняет все тесты
+\return количество успешно пройденных тестов
+*/
+int do_all_tests()
     {
     int total = 0;
-    total += one_test(0, 0, 0, 0, 0, INF);
-    total += one_test(12.33569, -0.2365, -69589.23, 75.11812179, -75.09894977, 2);
-    total += one_test(0, 0, 0, 0, 0, INF);
-    total += one_test(0, 0, 0, 0, 0, INF);
-    total += one_test(0, 0, 0, 0, 0, INF);
+    total += do_one_test(0, 0, 0, 0, 0, INF);
+    total += do_one_test(12.33569, -0.2365, -69589.23, 75.11812179, -75.09894977, 2);
+    total += do_one_test(0.00000001, 2, 46.6, -23.3, 0, 1);
+    total += do_one_test(0, 0, 10, 0, 0, 0);
+    total += do_one_test(1, -2, 1, 1, 0, 1);
+    total += do_one_test(1, 1, 1, 0, 0, 0);
     return total;
     }
