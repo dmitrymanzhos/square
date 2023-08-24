@@ -21,5 +21,6 @@ void print_roots(double coefs[] ,double roots[], int count);
 void get_coefs(double coefs[]);
 void get_line(char line[]);
 int compare(double a, double b);
+
 int do_one_test(const test_data* test);
 int do_all_tests();

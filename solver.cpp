@@ -142,6 +142,7 @@ void get_line(char line[])
 /*!
 сравнивает число с 0 в условиях double чисел
 \param[in] a число
+\param[in] a число
 \return -1 если < 0, 0 если равенство, 1 если > 0
 */
 int compare(double a, double b)

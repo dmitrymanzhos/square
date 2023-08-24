@@ -11,12 +11,14 @@
 
 /*!
 Точка входа
+\param[in] arg_count количество аргументов командной строки
+\param[in] *argv[]
 */
 int main(int arg_count, char *argv[])
     {
     if (arg_count > 1) ///< если есть аргументы командной строки кроме  имени файла
         {
-        if (strcmp(argv[1], "test") == 0) ///< если аргумент равен "test"
+        if (strcmp(argv[1], "test") == 0) ///< если 1й аргумент равен "test"
             {
             printf("тестов пройдено: %i\n", do_all_tests());
             return 0;
