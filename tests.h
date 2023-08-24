@@ -1,15 +1,9 @@
+#ifndef __TESTS_H__
+#define __TESTS_H__ 1
 /*!
 \file tests.h
-Заголовочный файл с прототипами функций для tests.cpp
+Заголовочный файл с прототипами функций tests.cpp
 */
-const int INF = 999999; ///< значение для бесконечности корней
+int do_all_tests();
 
-struct test_data { ///< структура для 1 теста
-    double a, b, c;
-    double x1_ref, x2_ref;
-    int count_ref;
-    };
-
-int solve_square(double coefs[], double roots[]);
-int compare(double a, double b);
-
+#endif

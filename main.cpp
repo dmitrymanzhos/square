@@ -5,9 +5,12 @@
 Программа получает коэффициенты кв. уравнения вида a*x^2 + b*x + c = 0
 и выводит приближенные решения
 */
+#undef __SOLVER_H__
+#undef __TESTS_H__
 #include <stdio.h>
 #include <cstring>
-#include "main.h"
+#include "tests.h"
+#include "solver.h"
 
 /*!
 Точка входа
