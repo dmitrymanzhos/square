@@ -4,16 +4,10 @@
 */
 #include <stdio.h>
 #include <math.h>
+#include <cassert>
+#include "solver.h"
 
-const double EPS = 0.0000001; ///< погрешность
-const int INF = 999999; ///< значение для бесконечности корней
-const int ERR = -1; ///< код ошибки
-
-int solve_square(double coefs[], double roots[]);
-void print_roots(double coefs[] ,double roots[], int count);
-void get_coefs(double coefs[]);
-int compare(double a, double b);
-void get_line(char line[]);
+static void get_line(char line[]);
 
 /*!
 Решает и записывает корни в roots[], если они есть
@@ -23,7 +17,6 @@ void get_line(char line[]);
 */
 int solve_square(double coefs[], double roots[])
     {
-
     if (compare(coefs[0], 0) == 0) ///< при a = 0
         if (compare(coefs[1], 0) == 0 && compare(coefs[2], 0) != 0)
             return 0; ///< нет корней
@@ -36,6 +29,8 @@ int solve_square(double coefs[], double roots[])
             }
     else if (compare(coefs[2], 0) == 0) ///< при c = 0, a != 0
         {
+        assert(compare(coefs[0], 0) != 0); ///< проверка на a != 0
+
         if (compare(coefs[1], 0) == 0)
             {
             roots[0] = 0;
@@ -50,6 +45,9 @@ int solve_square(double coefs[], double roots[])
         }
     else
         {
+        assert(compare(coefs[0], 0) != 0); ///< проверка на a != 0
+        assert(compare(coefs[0], 0) != 0); ///< проверка на c != 0
+
         double d = coefs[1] * coefs[1] - 4 * coefs[0] * coefs[2];
         if (compare(d, 0) == -1)
             return 0; ///< если дискриминант < 0
@@ -77,6 +75,8 @@ int solve_square(double coefs[], double roots[])
 */
 void print_roots(double coefs[] ,double roots[], int count)
     {
+    assert((0 <= count && count <= 2) || (count == INF)); ///< проверка количества корней
+
     if (compare(coefs[0], 0) == 0) ///< при a = 0
         {
         switch (count)
@@ -136,7 +136,7 @@ void get_coefs(double coefs[])
 Записывает вводимую строку в line
 \param[out] line[]
 */
-void get_line(char line[])
+static void get_line(char line[])
     {
     int c;
     int i;

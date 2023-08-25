@@ -4,15 +4,9 @@
 */
 #include <stdio.h>
 #include "solver.h"
+#include "tests.h"
 
-struct test_data { ///< структура для 1го теста
-    double a, b, c;
-    double x1_ref, x2_ref;
-    int count_ref;
-    };
-
-const int INF = 999999; ///< значение для бесконечности корней
-
+static int do_one_test(const test_data* test);
 /*!
 Проводит тест функции solve_square
 \param[in] test структура, содержащая данные для теста

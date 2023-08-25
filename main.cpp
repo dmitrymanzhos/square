@@ -7,6 +7,7 @@
 */
 #undef __SOLVER_H__
 #undef __TESTS_H__
+
 #include <stdio.h>
 #include <cstring>
 #include "tests.h"
@@ -21,12 +22,22 @@ int main(int arg_count, char *argv[])
     {
     if (arg_count > 1) ///< если есть аргументы командной строки кроме  имени файла
         {
-        if (strcmp(argv[1], "--test") == 0) ///< если 1й аргумент равен "--test"
-            {
-            printf("тестов пройдено: %i\n", do_all_tests());
-            return 0;
-            }
-        else return 0;
+        for (int i = 1; i < arg_count; i++)
+            if (strcmp(argv[i], "--test") == 0)
+                {
+                printf("тестов пройдено: %i\n", do_all_tests());
+                return 0;
+                }
+            else if (strcmp(argv[i], "--help") == 0)
+                {
+                printf("Usage: ./main [OPTION]...\nProgramm is the solver for square equation\nOptions:\n%s,\t%s\n%s,\t%s\n", "--test", "starts tests and exit", "--help", "display this help and exit");
+                return 0;
+                }
+            else
+                {
+                printf("./main: unrecognized option '%s'\nTry './main --help' for more information.\n", argv[i]);
+                return 0;
+                }
         }
     else
         {
