@@ -5,11 +5,10 @@
 Программа получает коэффициенты кв. уравнения вида a*x^2 + b*x + c = 0
 и выводит приближенные решения
 */
-#undef __SOLVER_H__
-#undef __TESTS_H__
-
 #include <stdio.h>
 #include <cstring>
+#include <math.h>
+#include <cassert>
 #include "tests.h"
 #include "solver.h"
 
@@ -23,6 +22,7 @@ int main(int arg_count, char *argv[])
     if (arg_count > 1) ///< если есть аргументы командной строки кроме  имени файла
         {
         for (int i = 1; i < arg_count; i++)
+            // TODO: функции для аргументов
             if (strcmp(argv[i], "--test") == 0)
                 {
                 printf("тестов пройдено: %i\n", do_all_tests());
@@ -41,10 +41,15 @@ int main(int arg_count, char *argv[])
         }
     else
         {
-        double coefs[3] = {0};
+        // TODO: isnan isfinite -> assert ->
+        double coefs[3] = {NAN, NAN, NAN};
         get_coefs(coefs);
-        double roots[2] = {0};
+        assert(!isnan(coefs[0]) && !isnan(coefs[1]) && !isnan(coefs[2])); ///< проверка на получение аргументов
+
+        double roots[2] = {NAN, NAN};
         int count = solve_square(coefs, roots);
+        assert((0 <= count && count <= 2) || (count == INF)); ///< проверка количества корней
+
         print_roots(coefs, roots, count);
         return 0;
         }
