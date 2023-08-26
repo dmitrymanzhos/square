@@ -12,6 +12,9 @@ static void get_line(char line[]);
 
 int solve_square(double coefs[], double roots[])
     {
+    assert(!isnan(coefs[0]) && !isnan(coefs[1]) && !isnan(coefs[2])); ///< проверяет, что изначально коэф. не NaN
+    assert(isnan(roots[0]) && isnan(roots[1])); ///< проверяет, что изначально корни NaN
+
     if (compare(coefs[0], 0) == 0) ///< при a = 0
         if (compare(coefs[1], 0) == 0 && compare(coefs[2], 0) != 0)
             return ZERO_ROOT; ///< нет корней
@@ -19,7 +22,10 @@ int solve_square(double coefs[], double roots[])
             return INF; ///< бесконечно много корней
         else
             {
-            roots[0] = -coefs[2] / coefs[1];
+            if (compare(-coefs[2] / coefs[1], 0) == 0)
+                roots[0] = 0;
+            else
+                roots[0] = -coefs[2] / coefs[1];
             return ONE_ROOT; ///< 1 корень
             }
     else if (compare(coefs[2], 0) == 0) ///< при c = 0, a != 0
@@ -65,6 +71,7 @@ int solve_square(double coefs[], double roots[])
 
 void print_roots(double coefs[] ,double roots[], int count)
     {
+    assert(!isnan(coefs[0]) && !isnan(coefs[1]) && !isnan(coefs[2])); ///< проверяет, что изначально коэф. не NaN
     assert((0 <= count && count <= 2) || (count == INF)); ///< проверка количества корней
 
     if (compare(coefs[0], 0) == 0) ///< при a = 0
@@ -108,8 +115,10 @@ void print_roots(double coefs[] ,double roots[], int count)
 
 void get_coefs(double coefs[])
     {
+    assert(isnan(coefs[0]) && isnan(coefs[1])); ///< проверяет, что изначально коэф. NaN
+
     printf("введите коэффициенты через пробел\n");
-    char line[MAXSIZE] = {};
+    char line[MAXSIZE] = {}; ///< символьный массив, в который поместится считываемая строка
     get_line(line);
     while (sscanf(line, "%lf %lf %lf", &coefs[0], &coefs[1], &coefs[2]) != 3)
         {
