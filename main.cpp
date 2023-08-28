@@ -14,6 +14,7 @@
 
 void handle_arg_test();
 void handle_arg_help();
+void handle_unknown_arg();
 
 /*!
 Точка входа
@@ -37,7 +38,7 @@ int main(int arg_count, char *argv[])
                 }
             else
                 {
-                printf("./main: unrecognized option '%s'\nTry './main --help' for more information.\n", argv[i]);
+                handle_unknown_arg();
                 return 0;
                 }
         }
@@ -46,7 +47,7 @@ int main(int arg_count, char *argv[])
         // TODO: isnan isfinite -> assert ->
         double coefs[3] = {NAN, NAN, NAN};
         get_coefs(coefs);
-        assert(!isnan(coefs[0]) && !isnan(coefs[1]) && !isnan(coefs[2])); ///< проверка на получение аргументов
+        assert(!isnan(coefs[0]) && !isnan(coefs[1]) && !isnan(coefs[2])); ///< проверка на получение коэф.
 
         double roots[2] = {NAN, NAN};
         int count = solve_square(coefs, roots);
@@ -75,5 +76,15 @@ void handle_arg_help()
     {
     printf("Usage: ./main [OPTION]...\nProgramm is the solver for square equation\nOptions:\n%s,\t%s\n%s,\t%s\n",
             "--test", "starts tests and exit", "--help", "display this help and exit");
+    return;
+    }
+
+
+/*!
+Реагирует на незнакомый аргумент
+*/
+void handle_unknown_arg()
+    {
+    printf("./main: unrecognized option '%s'\nTry './main --help' for more information.\n", argv[i]);
     return;
     }
