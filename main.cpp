@@ -14,7 +14,8 @@
 
 void handle_arg_test();
 void handle_arg_help();
-void handle_unknown_arg();
+void handle_unknown_arg(const char arg[]);
+
 
 /*!
 Точка входа
@@ -38,22 +39,22 @@ int main(int arg_count, char *argv[])
                 }
             else
                 {
-                handle_unknown_arg();
+                handle_unknown_arg(argv[i]);
                 return 0;
                 }
         }
     else
         {
-        // TODO: isnan isfinite -> assert ->
-        double coefs[3] = {NAN, NAN, NAN};
-        get_coefs(coefs);
-        assert(!isnan(coefs[0]) && !isnan(coefs[1]) && !isnan(coefs[2])); ///< проверка на получение коэф.
+        data all = {NAN, NAN, NAN,
+                    NAN, NAN,
+                    ERR};
+        get_coefs(&all);
+        assert(!isnan(all.a) && !isnan(all.b) && !isnan(all.c)); ///< проверка на получение коэф.
 
-        double roots[2] = {NAN, NAN};
-        int count = solve_square(coefs, roots);
-        assert((0 <= count && count <= 2) || (count == INF)); ///< проверка количества корней
+        all.count = solve_square(&all);
 
-        print_roots(coefs, roots, count);
+        assert((ZERO_ROOT <= all.count && all.count <= TWO_ROOTS) || (all.count == INF)); ///< проверка количества корней
+        print_roots(&all);
         return 0;
         }
     }
@@ -83,8 +84,8 @@ void handle_arg_help()
 /*!
 Реагирует на незнакомый аргумент
 */
-void handle_unknown_arg()
+void handle_unknown_arg(const char arg[])
     {
-    printf("./main: unrecognized option '%s'\nTry './main --help' for more information.\n", argv[i]);
+    printf("./main: unrecognized option '%s'\nTry './main --help' for more information.\n", arg);
     return;
     }

@@ -7,61 +7,62 @@
 #include <cassert>
 #include "solver.h"
 
-static void get_line(char line[]);
+static void clear_buf();
 
 
-int solve_square(double coefs[], double roots[])
+int solve_square(data *all)
     {
-    assert(!isnan(coefs[0]) && !isnan(coefs[1]) && !isnan(coefs[2])); ///< проверяет, что изначально коэф. не NaN
-    assert(isnan(roots[0]) && isnan(roots[1])); ///< проверяет, что изначально корни NaN
+    assert(all);
+    assert(!isnan(all->a) && !isnan(all->b) && !isnan(all->c)); ///< проверяет, что изначально коэф. не NaN
+    assert(isnan(all->x1) && isnan(all->x2)); ///< проверяет, что изначально корни NaN
 
-    if (compare(coefs[0], 0) == 0) ///< при a = 0
-        if (compare(coefs[1], 0) == 0 && compare(coefs[2], 0) != 0)
+    if (is_equal(all->a, 0) != 0) ///< при a = 0
+        if (is_equal(all->b, 0) != 0 && is_equal(all->c, 0) == 0)
             return ZERO_ROOT; ///< нет корней
-        else if (compare(coefs[1], 0) == 0 && compare(coefs[2], 0) == 0)
+        else if (is_equal(all->b, 0) != 0 && is_equal(all->c, 0) != 0)
             return INF; ///< бесконечно много корней
         else
             {
-            if (compare(-coefs[2] / coefs[1], 0) == 0)
-                roots[0] = 0;
+            if (is_equal(-all->c / all->b, 0) != 0)
+                all->x1 = 0;
             else
-                roots[0] = -coefs[2] / coefs[1];
+                all->x1 = -all->c / all->b;
             return ONE_ROOT; ///< 1 корень
             }
-    else if (compare(coefs[2], 0) == 0) ///< при c = 0, a != 0
+    else if (is_equal(all->c, 0) != 0) ///< при c = 0, a != 0
         {
-        assert(compare(coefs[0], 0) != 0); ///< проверка на a != 0
+        assert(is_equal(all->a, 0) == 0); ///< проверка на a != 0
 
-        if (compare(coefs[1], 0) == 0)
+        if (is_equal(all->b, 0) != 0)
             {
-            roots[0] = 0;
+            all->x1 = 0;
             return ONE_ROOT; ///< если b = 0
             }
         else
             {
-            roots[0] = 0;
-            roots[1] = -coefs[1] / coefs[0];
+            all->x1 = 0;
+            all->x2 = -all->b / all->a;
             return TWO_ROOTS; ///< если b != 0
             }
         }
     else
         {
-        assert(compare(coefs[0], 0) != 0); ///< проверка на a != 0
-        assert(compare(coefs[0], 0) != 0); ///< проверка на c != 0
+        assert(is_equal(all->a, 0) == 0); ///< проверка на a != 0
+        assert(is_equal(all->a, 0) == 0); ///< проверка на c != 0
 
-        double d = coefs[1] * coefs[1] - 4 * coefs[0] * coefs[2];
-        if (compare(d, 0) == -1)
+        double d = all->b * all->b - 4 * all->a * all->c;
+        if (d < 0)
             return ZERO_ROOT; ///< если дискриминант < 0
-        else if (compare(d, 0) == 0)
+        else if (is_equal(d, 0) != 0)
             {
-            roots[0] = -coefs[1] / (2 * coefs[0]);
+            all->x1 = -all->b / (2 * all->a);
             return ONE_ROOT; ///< если дискриминант = 0
             }
-        else if (compare(d, 0) == 1)
+        else if (d > 0)
             {
             double root_of_d = sqrt(d);
-            roots[0] = (-coefs[1] + root_of_d) / (2 * coefs[0]);
-            roots[1] = (-coefs[1] - root_of_d) / (2 * coefs[0]);
+            all->x1 = (-all->b + root_of_d) / (2 * all->a);
+            all->x2 = (-all->b - root_of_d) / (2 * all->a);
             return TWO_ROOTS; ///< если дискриминант > 0
             }
         }
@@ -69,91 +70,64 @@ int solve_square(double coefs[], double roots[])
     }
 
 
-void print_roots(double coefs[] ,double roots[], int count)
+void print_roots(const data *all)
     {
-    assert(!isnan(coefs[0]) && !isnan(coefs[1]) && !isnan(coefs[2])); ///< проверяет, что изначально коэф. не NaN
-    assert((0 <= count && count <= 2) || (count == INF)); ///< проверка количества корней
+    assert(all);
+    assert(!isnan(all->a) && !isnan(all->b) && !isnan(all->c)); ///< проверяет, что изначально коэф. не NaN
+    assert((ZERO_ROOT <= all->count && all->count <= TWO_ROOTS) || (all->count == INF)); ///< проверка количества корней
 
-    if (compare(coefs[0], 0) == 0) ///< при a = 0
+    if (is_equal(all->a, 0) != 0) ///< при a = 0
+        printf("уравнение не квадратное;\n");
+
+    switch (all->count)
         {
-        switch (count)
-            {
-            case ZERO_ROOT:
-                printf("Уравнение не квадратное; нет решений\n");
-                break;
-            case ONE_ROOT:
-                printf("Уравнение не квадратное; 1 корень:\n%.10lf\n", roots[0]);
-                break;
-            case INF:
-                printf("Уравнение не квадратное; бесконечно много решений\n");
-                break;
-            default:
-                printf("ошибка\n");
-                break;
-            }
-        }
-    else ///< при a != 0
-        {
-        switch (count)
-            {
-            case ZERO_ROOT:
-                printf("нет вещественных решений\n");
-                break;
-            case ONE_ROOT:
-                printf("1 корень:\n%.10lf\n", roots[0]);
-                break;
-            case TWO_ROOTS:
-                printf("2 корня:\n%.10lf\n%.10lf\n", roots[0], roots[1]);
-                break;
-            default:
-                printf("Ошибка\n");
-                break;
-            }
+        case ZERO_ROOT:
+            printf("нет решений\n");
+            break;
+        case ONE_ROOT:
+            printf("1 корень:\n%.10lf\n", all->x1);
+            break;
+        case TWO_ROOTS:
+            printf("2 корня:\n%.10lf\n%.10lf\n", all->x1, all->x2);
+            break;
+        case INF:
+            printf("бесконечно много решений\n");
+            break;
+        default:
+            printf("ошибка\n");
+            break;
         }
     }
 
 
-void get_coefs(double coefs[])
+void get_coefs(data *all)
     {
-    assert(isnan(coefs[0]) && isnan(coefs[1])); ///< проверяет, что изначально коэф. NaN
+    assert(all);
+    assert(isnan(all->a) && isnan(all->b) && isnan(all->c)); ///< проверяет, что изначально коэф. NaN
 
     printf("введите коэффициенты через пробел\n");
-    char line[MAXSIZE] = {}; ///< символьный массив, в который поместится считываемая строка
-    get_line(line);
-    while (sscanf(line, "%lf %lf %lf", &coefs[0], &coefs[1], &coefs[2]) != 3)
+    char c = '\0';
+    while (scanf("%lf %lf %lf%1[\n]", &(all->a), &(all->b), &(all->c), &c) != 4)
         {
         printf("неверный формат ввода, повторите попытку\n");
-        get_line(line);
+        clear_buf();
         }
     return;
     }
 
 /*!
-Записывает вводимую строку в line
-\param[out] line[]
+Очищает буфер
 */
-static void get_line(char line[])
+static void clear_buf()
     {
     int c = 0;
-    int i = 0;
-    for (i = 0; (c = getchar()) != EOF && c != '\n' && i < (MAXSIZE - 1); i++)
-        line[i] = char(c);
-    if (char(c) == '\n')
-        {
-        line[i] = char(c);
-        ++i;
-        }
-    line[i] = '\0';
+    while ((c = getchar()) != EOF && c != '\n')
+        ;
     return;
     }
 
 
-int compare(double a, double b)
+int is_equal(const double a, const double b)
     {
-    if (a - b <= -EPS)
-        return -1; ///< если a < b
-    else if (fabs(a - b) < EPS)
-        return 0; ///< если a = b
-    else
-        return 1; ///< если a > b
+    return (fabs(a - b) < EPS);
     }
