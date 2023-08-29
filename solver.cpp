@@ -107,7 +107,7 @@ void get_coefs(data *all)
 
     printf("введите коэффициенты через пробел\n");
     char c = '\0';
-    while (scanf("%lf %lf %lf%1[\n]", &(all->a), &(all->b), &(all->c), &c) != 4)
+    while (scanf("%lf%*[ \t]%lf%*[ \t]%lf%1[\n]", &(all->a), &(all->b), &(all->c), &c) != 4)
         {
         printf("неверный формат ввода, повторите попытку\n");
         clear_buf();
