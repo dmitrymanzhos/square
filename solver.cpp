@@ -106,10 +106,10 @@ void get_coefs(data *all)
     assert(isnan(all->a) && isnan(all->b) && isnan(all->c)); ///< проверяет, что изначально коэф. NaN
 
     printf("введите коэффициенты через пробел\n");
-    char c = '\0';
-    while (scanf("%lf%*[ \t]%lf%*[ \t]%lf%1[\n]", &(all->a), &(all->b), &(all->c), &c) != 4)
+    char c = 0;
+    while (!(scanf("%lf%*[ \t]%lf%*[ \t]%lf%c", &(all->a), &(all->b), &(all->c), &c) == 4 && c == '\n'))
         {
-        printf("неверный формат ввода, повторите попытку\n");
+        printf("-неверный формат ввода, повторите попытку\n");
         clear_buf();
         }
     return;

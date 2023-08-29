@@ -45,7 +45,7 @@ int main(int arg_count, char *argv[])
         }
     else
         {
-        data all = {NAN, NAN, NAN,
+        data all = {NAN, NAN, NAN, ///< структура для коэф., корней и их количества
                     NAN, NAN,
                     ERR};
         get_coefs(&all);

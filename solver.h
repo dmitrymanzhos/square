@@ -4,7 +4,13 @@
 */
 #ifndef __SOLVER_H__
 #define __SOLVER_H__
-enum  ROOT_COUNT {ZERO_ROOT = 0, ONE_ROOT = 1 , TWO_ROOTS = 2 ,INF = 999999 , ERR = -1}; ///< константы для количества корней
+enum  ROOT_COUNT {
+    ZERO_ROOT = 0,
+    ONE_ROOT  = 1,
+    TWO_ROOTS = 2,
+    INF       = 999999,
+    ERR       = -1
+}; ///< константы для количества корней
 const double EPS = 0.0000001; ///< погрешность
 
 struct data {
